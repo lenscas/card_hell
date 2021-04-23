@@ -1,0 +1,6 @@
+/tmp
+**/obj
+/.import
+**/.ionide
+/.mono
+**/bin
