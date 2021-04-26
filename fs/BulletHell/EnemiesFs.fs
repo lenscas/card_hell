@@ -49,6 +49,7 @@ type EnemiesFs() as this =
                         test.getNextMovementFunc map.Value enemy.sprite.Position movement
 
                     let mutable passedTime = 0F
+                    let mutable hasSpawnedBulelts = false
 
                     (card,
                      { enemy with
@@ -58,7 +59,9 @@ type EnemiesFs() as this =
                                    let percentage = min 1F passedTime
                                    sprite.Position <- movementFunc percentage
 
-                                   if cards.WillSpawnBullets card then
+                                   if (not hasSpawnedBulelts)
+                                      && cards.WillSpawnBullets card then
+                                       hasSpawnedBulelts <- true
                                        spawnBullets sprite.Position) }))
 
             )
