@@ -36,5 +36,4 @@ module cards =
             | SpawnBullets -> "bullets"
             | Dead -> "dead"
 
-        let path = "res://cards/" + img + ".png"
-        GD.Load<Texture>(path)
+        GDUtils.loadCard img

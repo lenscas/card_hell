@@ -3,7 +3,7 @@ using System;
 
 using BulletHell;
 
-public class Restart : RestartFs
+public class SceneManager : SceneManagerFs
 {
 }
 

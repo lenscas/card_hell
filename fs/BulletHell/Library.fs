@@ -34,7 +34,7 @@ type Library(newCards) =
                 shuffle ()
 
                 if deck.Length = 0 then
-                    raise (new System.Exception("deck is empty"))
+                    raise (new System.Exception "deck is empty")
 
                 this.fillHand ()
             | head :: tail ->

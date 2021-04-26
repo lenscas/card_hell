@@ -1,6 +1,7 @@
 namespace BulletHell
 
 open Godot
+open GDUtils
 
 module test =
     let gridSizeX = 16
@@ -64,8 +65,7 @@ module test =
 type PlayerFs() as this =
     inherit Sprite()
 
-    let map =
-        lazy (this.GetNode<TileMap>(new NodePath("../Ground")))
+    let map = this.getNode<TileMap> "../Ground"
 
     let mutable run : Option<(float32 -> bool * unit)> = None
 

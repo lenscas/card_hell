@@ -1,6 +1,7 @@
 namespace BulletHell
 
 open Godot
+open GDUtils
 
 type battery = { sprite: Sprite; storedTime: float32 }
 
@@ -19,11 +20,7 @@ type BatteriesFs() as this =
             (map.Value.MapToWorld location)
             + (new Vector2(32F, 32F))
 
-        let sprite = new Sprite()
-        sprite.Texture <- GD.Load<Texture>("res://battery.png")
-        sprite.Position <- location
-
-        this.AddChild(sprite)
+        let sprite = this.addSprite "battery" location
 
         batteries <-
             { sprite = sprite

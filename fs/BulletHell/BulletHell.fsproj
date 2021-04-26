@@ -13,6 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="NodeExtensions.fs"/>
+    <Compile Include="Timer.fs" />
     <Compile Include="BatteriesFs.fs" />
     <Compile Include="RestartFs.fs" />
     <Compile Include="cards.fs" />
@@ -22,6 +24,8 @@
     <Compile Include="EnemiesFs.fs" />
     <Compile Include="HandFs.fs" />
     <Compile Include="Node2DFs.fs" />
+    <Compile Include="PlayModeMenuFs.fs" />
+    <Compile Include="SceneManagerFs.fs" />
   </ItemGroup>
   <PropertyGroup>
     <!-- When compiling .NET SDK 2.0 projects targeting .NET 4.x on Mono using 'dotnet build' you -->

@@ -1,6 +1,7 @@
 namespace BulletHell
 
 open Godot
+open GDUtils
 
 type GameState =
     | CastTime
@@ -9,28 +10,22 @@ type GameState =
 type Node2DFs() as this =
     inherit Node2D()
 
-    let player =
-        lazy (this.GetNode<PlayerFs>(new NodePath("Player")))
+    let player = this.getNode<PlayerFs> "Player"
 
-    let hand =
-        lazy (this.GetNode<HandFs>(new NodePath("Hand")))
+    let hand = this.getNode<HandFs> "Hand"
 
-    let timerElement =
-        lazy (this.GetNode<RichTextLabel>(new NodePath("Timer")))
+    let timerElement = this.getNode<RichTextLabel> "Timer"
 
-    let bullets =
-        lazy (this.GetNode<BulletsFs>(new NodePath("Bullets")))
+    let bullets = this.getNode<BulletsFs> "Bullets"
 
-    let enemies =
-        lazy (this.GetNode<EnemiesFs>(new NodePath("Enemies")))
+    let enemies = this.getNode<EnemiesFs> "Enemies"
 
-    let batteries =
-        lazy (this.GetNode<BatteriesFs>(new NodePath("Batteries")))
+    let batteries = this.getNode<BatteriesFs> "Batteries"
 
     let random = new System.Random()
 
     let mutable state = AnimationTime(0, 0)
-    let mutable timer = 10F
+    let mutable gameTimer : Option<BulletHell.Timer> = None
 
     let updateDone () =
         match state with
@@ -51,20 +46,21 @@ type Node2DFs() as this =
         for direction in directions do
             bullets.Value.AddBullet direction location isPlayer
 
-    override this._Process delta =
+    let tick unpackedGameTimer delta =
+        let mutable unpackedGameTimer = unpackedGameTimer
+
         match state with
         | AnimationTime (toDo, hasDone) ->
             if toDo = hasDone then
                 let count =
                     bullets.Value.getAmountHitPlayer player.Value.Position
 
-                GD.Print(count)
                 hand.Value.AddCard Dead count
 
                 let time =
                     batteries.Value.getExtraTimeAmount player.Value.Position
 
-                timer <- (timer + time) |> min 10F
+                unpackedGameTimer <- timer.collectBattery unpackedGameTimer time
 
 
                 state <- CastTime
@@ -72,14 +68,12 @@ type Node2DFs() as this =
                 hand.Value.StartCastTime
                     (fun (casted: Cards) ->
                         match casted with
-                        | Dead ->
-                            this
-                                .GetTree()
-                                .ChangeScene("res://restart_screen.tscn")
-                            |> ignore
+                        | Dead -> this.EmitSignal("End", 0)
                         | _ -> ()
 
-                        player.Value.GoTo(casted |> cards.ToVec) (updateDone)
+                        unpackedGameTimer <- timer.addTurn unpackedGameTimer
+
+                        player.Value.GoTo(casted |> cards.ToVec) updateDone
 
                         if cards.WillSpawnBullets casted then
                             spawnbullets true player.Value.Position
@@ -90,21 +84,34 @@ type Node2DFs() as this =
 
                         if batteries.Value.count () < 3
                            || (random.Next() > System.Int32.MaxValue / 3) then
-                            9
+                            unpackedGameTimer
+                            |> timer.maxBatterySize
+                            |> (fun x -> x - 1)
                             |> random.Next
                             |> (fun x -> x + 1)
                             |> float32
                             |> batteries.Value.addBattery (test.getRandomInBetween ())
 
-
                         bullets.Value.startAnimation updateDone
                         enemies.Value.startAnimation updateDone (spawnbullets false)
-                        state <- AnimationTime(3, 0))
+                        state <- AnimationTime(3, 0)
+
+                        gameTimer <- Some unpackedGameTimer)
 
         | CastTime ->
-            timer <- timer - delta
-            timerElement.Value.Text <- Mathf.Round(timer).ToString()
+            unpackedGameTimer <- timer.tick unpackedGameTimer delta
+            let timeLeft = timer.getTimeLeft unpackedGameTimer
+            timerElement.Value.Text <- Mathf.Round(timeLeft).ToString()
 
-            if timer < 0F then
-                timer <- 10F
+            if timeLeft < 0F then
+                unpackedGameTimer <- timer.reset unpackedGameTimer
                 hand.Value.AddCard Dead 1
+
+        unpackedGameTimer
+
+    member __.addTimer timer = gameTimer <- Some timer
+
+    override __._Process delta =
+        match gameTimer with
+        | Some x -> gameTimer <- tick x delta |> Some
+        | None -> ()

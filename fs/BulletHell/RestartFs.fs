@@ -3,8 +3,7 @@ namespace BulletHell
 open Godot
 
 type RestartFs() =
-    inherit Button()
+    inherit Node2D()
 
     member this.OnRestartButtonPressed() =
-        this.GetTree().ChangeScene("res://MainScene.tscn")
-        |> ignore
+        this.EmitSignal("RestartGameSameConfig")

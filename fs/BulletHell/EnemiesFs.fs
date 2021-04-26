@@ -1,6 +1,7 @@
 namespace BulletHell
 
 open Godot
+open GDUtils
 
 type EnemyState =
     | Animation of float32 * (unit -> unit)
@@ -18,8 +19,7 @@ type EnemiesFs() as this =
 
     let mutable enemies = []
 
-    let map =
-        lazy (this.GetNode<TileMap>(new NodePath("../Ground")))
+    let map = this.getNode<TileMap> "../Ground"
 
     member __.checkEnemies func =
         enemies <-
@@ -81,13 +81,7 @@ type EnemiesFs() as this =
             (map.Value.MapToWorld location)
             + (new Vector2(32F, 32F))
 
-        let path = "res://enemy.png"
-
-        let sprite = new Sprite()
-        sprite.Texture <- GD.Load<Texture> path
-        sprite.Position <- location
-
-        this.AddChild(sprite)
+        let sprite = this.addSprite "enemy" location
 
         enemies <-
             { sprite = sprite

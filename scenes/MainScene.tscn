@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://scenes/PlayModeMenu.tscn" type="PackedScene" id=1]
+[ext_resource path="res://scenes/RestartScreen.tscn" type="PackedScene" id=2]
+[ext_resource path="res://csharpCodeDump/SceneManager.cs" type="Script" id=3]
+
+[node name="SceneManager" type="Node2D"]
+script = ExtResource( 3 )
+
+[node name="Restart" parent="." instance=ExtResource( 2 )]
+visible = false
+
+[node name="PlayModeMenu" parent="." instance=ExtResource( 1 )]
+[connection signal="RestartGameSameConfig" from="Restart" to="." method="OnRestartGameSameConfig"]
+[connection signal="ChosenPlayMode" from="PlayModeMenu" to="." method="OnChoosePlayMode"]

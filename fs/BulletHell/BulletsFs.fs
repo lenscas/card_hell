@@ -1,6 +1,7 @@
 namespace BulletHell
 
 open Godot
+open GDUtils
 
 type state =
     | Animation of float32 * (unit -> unit)
@@ -19,8 +20,7 @@ type BulletsFs() as this =
     let mutable bulletsPlayer = []
     let mutable bulletsGame = []
 
-    let map =
-        lazy (this.GetNode<TileMap>(new NodePath("../Ground")))
+    let map = this.getNode<TileMap> "../Ground"
 
 
     member __.startAnimation func =
@@ -81,13 +81,7 @@ type BulletsFs() as this =
         |> Seq.length
 
     member this.AddBullet movement location isPlayer =
-        let path = "res://bullet.png"
-
-        let sprite = new Sprite()
-        sprite.Texture <- GD.Load<Texture>(path)
-        sprite.Position <- location
-
-        this.AddChild(sprite)
+        let sprite = this.addSprite "bullet" location
 
         if isPlayer then
             bulletsPlayer <-
