@@ -12,16 +12,12 @@ type BatteriesFs() as this =
 
     let mutable batteries = []
 
+    member __.count() = batteries.Length
+
     member this.addBattery location storedTime =
         let location =
             (map.Value.MapToWorld location)
             + (new Vector2(32F, 32F))
-
-        //let path = "res://battery.png"
-        //let tex = new ImageTexture()
-        //let img = new Image()
-        //ignore (img.Load path)
-        //tex.CreateFromImage img
 
         let sprite = new Sprite()
         sprite.Texture <- GD.Load<Texture>("res://battery.png")

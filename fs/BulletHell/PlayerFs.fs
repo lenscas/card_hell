@@ -3,6 +3,26 @@ namespace BulletHell
 open Godot
 
 module test =
+    let gridSizeX = 16
+    let gridSizeY = 7
+    let gridStart = 1
+
+    let random = (new System.Random())
+
+    let getRandomInBetween () =
+        new Vector2(
+            float32 (random.Next(gridSizeX - gridStart) + gridStart),
+            float32 (random.Next(gridSizeY - gridStart) + gridStart)
+        )
+
+    let isInGrid (map: TileMap) position =
+        let position = map.WorldToMap position
+
+        position.x >= float32 gridStart
+        && position.x <= float32 gridSizeX
+        && position.y >= float32 gridStart
+        && position.y <= float32 gridSizeY
+
     let ProcPercentage after_done func =
         let mutable passedTime : float32 = 0F
 

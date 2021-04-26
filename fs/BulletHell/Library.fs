@@ -69,8 +69,6 @@ type Library(newCards) =
             |> Seq.map (fun (_, card) -> card)
             |> Seq.toList
 
-        GD.Print(first, second)
-        GD.Print(clonedCards)
         casted <- List.concat [ clonedCards; casted ]
 
         hand <-
@@ -80,6 +78,5 @@ type Library(newCards) =
             |> Seq.map (fun (_, card) -> card)
             |> Seq.toList
 
-        GD.Print("Hand length: ", hand.Length)
         this.fillHand ()
         ()

@@ -58,6 +58,7 @@ type Node2DFs() as this =
                 let count =
                     bullets.Value.getAmountHitPlayer player.Value.Position
 
+                GD.Print(count)
                 hand.Value.AddCard Dead count
 
                 let time =
@@ -84,17 +85,16 @@ type Node2DFs() as this =
                             spawnbullets true player.Value.Position
 
                         if random.Next() > System.Int32.MaxValue / 2 then
-                            enemies.Value.AddEnemy(
-                                new Vector2(float32 (random.Next(15) + 1), float32 (random.Next(6) + 1))
-                            )
+                            test.getRandomInBetween ()
+                            |> enemies.Value.AddEnemy
 
-                        if random.Next() > System.Int32.MaxValue / 3 then
-                            10
+                        if batteries.Value.count () < 3
+                           || (random.Next() > System.Int32.MaxValue / 3) then
+                            9
                             |> random.Next
+                            |> (fun x -> x + 1)
                             |> float32
-                            |> batteries.Value.addBattery (
-                                new Vector2(float32 (random.Next(15) + 1), float32 (random.Next(6) + 1))
-                            )
+                            |> batteries.Value.addBattery (test.getRandomInBetween ())
 
 
                         bullets.Value.startAnimation updateDone
@@ -106,7 +106,5 @@ type Node2DFs() as this =
             timerElement.Value.Text <- Mathf.Round(timer).ToString()
 
             if timer < 0F then
-                this
-                    .GetTree()
-                    .ChangeScene("res://restart_screen.tscn")
-                |> ignore
+                timer <- 10F
+                hand.Value.AddCard Dead 1

@@ -35,17 +35,14 @@ type HandFs() as this =
     member __.AddCard card times = deck.addCard card times
 
     member __.ClickedCard(index: int) =
-        GD.Print(currentState)
 
         match currentState with
         | Hidden -> ()
         | Cast func ->
-            GD.Print("got in Cast")
             currentState <- Discard((index), func)
 
             let card = cardImages.Value.[index]
             card.Hide()
-            GD.Print(currentState)
         | Discard (card, func) ->
             if card = index then
                 ()
@@ -74,5 +71,3 @@ type HandFs() as this =
             i |> bindings.Add |> ignore
 
             ignore (card.Connect("pressed", this, nameof (this.ClickedCard), bindings))
-
-        GD.Print(cardImages)
