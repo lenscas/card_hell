@@ -25,9 +25,6 @@ jobs:
           mkdir -v -p build/windows
           cd $EXPORT_NAME
           godot -v --export "Windows Desktop" ../build/windows/$EXPORT_NAME.exe
-        with:
-          name: windows
-          path: build/windows
 
   export-linux:
     name: Linux Export
