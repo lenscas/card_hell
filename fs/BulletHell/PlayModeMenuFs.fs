@@ -11,7 +11,6 @@ type PlayModeMenuFs() =
     override this._Ready() = GD.Print(this.Text)
 
     member this.OpenJam() =
-        GD.Print "fire signal"
         this.EmitSignal("ChosenPlayMode", TimerType.Jam)
 
     member this.OpenRelaxed() =

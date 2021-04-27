@@ -25,7 +25,7 @@ module timer =
         | Relaxed x -> Relaxed(x - 1F)
         | EverShrinking (x, y) ->
             let y = y - 1F
-            EverShrinking(x, y)
+            EverShrinking(y, y)
 
     let collectBattery timer amount =
         match timer with

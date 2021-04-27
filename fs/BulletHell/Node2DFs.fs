@@ -71,7 +71,7 @@ type Node2DFs() as this =
                         | Dead -> this.EmitSignal("End", 0)
                         | _ -> ()
 
-                        unpackedGameTimer <- timer.addTurn unpackedGameTimer
+                        gameTimer <- gameTimer |> Option.map timer.addTurn
 
                         player.Value.GoTo(casted |> cards.ToVec) updateDone
 
@@ -94,9 +94,7 @@ type Node2DFs() as this =
 
                         bullets.Value.startAnimation updateDone
                         enemies.Value.startAnimation updateDone (spawnbullets false)
-                        state <- AnimationTime(3, 0)
-
-                        gameTimer <- Some unpackedGameTimer)
+                        state <- AnimationTime(3, 0))
 
         | CastTime ->
             unpackedGameTimer <- timer.tick unpackedGameTimer delta
