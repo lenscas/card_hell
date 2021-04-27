@@ -1,4 +1,4 @@
-name: "godot-ci export"
+name: "Tests"
 on: pull_request
 
 env:
@@ -6,8 +6,8 @@ env:
   EXPORT_NAME: card_hell
 
 jobs:
-  export-windows:
-    name: Windows Export
+  test_linux:
+    name: Test Linux
     runs-on: ubuntu-latest
     container:
       image: barichello/godot-ci:mono-3.2.3
@@ -19,67 +19,7 @@ jobs:
       - uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '5.0.x'
-      - name: Setup
-        run: |
-          mkdir -v -p ~/.local/share/godot/templates
-          mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable.mono ~/.local/share/godot/templates/${GODOT_VERSION}.stable.mono
       - name: Windows Build
         run: |
           mkdir -v -p ../build/windows
-          dotnet restore
-          godot -v --export "Windows Desktop" ../build/windows/$EXPORT_NAME.exe
-
-  export-linux:
-    name: Linux Export
-    runs-on: ubuntu-latest
-    container:
-      image: barichello/godot-ci:mono-3.2.3
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-      - name: Setup
-        run: |
-          mkdir -v -p ~/.local/share/godot/templates
-          mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable.mono ~/.local/share/godot/templates/${GODOT_VERSION}.stable.mono
-      - name: Linux Build
-        run: |
-          mkdir -v -p ../build/linux
-          godot -v --export "Linux/X11" ../build/linux/$EXPORT_NAME.x86_64
-  export-web:
-    name: Web Export
-    runs-on: ubuntu-latest
-    container:
-      image: barichello/godot-ci:mono-3.2.3
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-      - name: Setup
-        run: |
-          mkdir -v -p ~/.local/share/godot/templates
-          mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable.mono ~/.local/share/godot/templates/${GODOT_VERSION}.stable.mono
-      - name: Web Build
-        run: |
-          mkdir -v -p ../build/web
-          godot -v --export "HTML5" ../build/web/index.html
-  export-mac:
-    name: Mac Export
-    runs-on: ubuntu-latest
-    container:
-      image: barichello/godot-ci:mono-3.2.3
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-      - name: Setup
-        run: |
-          mkdir -v -p ~/.local/share/godot/templates
-          mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable.mono ~/.local/share/godot/templates/${GODOT_VERSION}.stable.mono
-      - name: Mac Build
-        run: |
-          mkdir -v -p ../build/mac
-          godot -v --export "Mac OSX" ../build/mac/$EXPORT_NAME.zip
+          godot -v --build-solutions
