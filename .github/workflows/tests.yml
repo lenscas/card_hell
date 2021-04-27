@@ -16,6 +16,9 @@ jobs:
         uses: actions/checkout@v2
         with:
           lfs: true
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.x'
       - name: Setup
         run: |
           mkdir -v -p ~/.local/share/godot/templates
@@ -23,6 +26,7 @@ jobs:
       - name: Windows Build
         run: |
           mkdir -v -p ../build/windows
+          dotnet restore
           godot -v --export "Windows Desktop" ../build/windows/$EXPORT_NAME.exe
 
   export-linux:
@@ -59,7 +63,7 @@ jobs:
           mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable.mono ~/.local/share/godot/templates/${GODOT_VERSION}.stable.mono
       - name: Web Build
         run: |
-          mkdir -v -p build/web
+          mkdir -v -p ../build/web
           godot -v --export "HTML5" ../build/web/index.html
   export-mac:
     name: Mac Export
