@@ -27,7 +27,7 @@ type BatteriesFs() as this =
               storedTime = storedTime }
             :: batteries
 
-    member __.getExtraTimeAmount location =
+    member __.getExtraTimeAmount location onCollision =
         let map = map.Value
         let playerLoc = map.WorldToMap(location)
         let mutable time = 0F
@@ -39,6 +39,7 @@ type BatteriesFs() as this =
                     if map.WorldToMap(x.sprite.Position) = playerLoc then
                         time <- time + x.storedTime
                         x.sprite.QueueFree()
+                        onCollision ()
                         false
                     else
                         true)

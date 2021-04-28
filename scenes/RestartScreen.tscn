@@ -5,22 +5,29 @@
 [node name="Node2D" type="Node2D"]
 script = ExtResource( 1 )
 
-[node name="RichTextLabel" type="RichTextLabel" parent="."]
-margin_left = 381.0
-margin_top = 131.0
-margin_right = 639.0
-margin_bottom = 196.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Button" type="Button" parent="."]
-margin_left = 393.0
-margin_top = 319.0
-margin_right = 644.0
-margin_bottom = 382.0
+[node name="Restart" type="Button" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = 384.0
+margin_top = 512.0
+margin_right = 640.0
+margin_bottom = 576.0
 text = "Restart"
 __meta__ = {
 "_edit_use_anchors_": false
 }
-[connection signal="pressed" from="Button" to="." method="OnRestartButtonPressed"]
+
+[node name="CurrentScore" type="Label" parent="."]
+margin_left = 386.0
+margin_top = 22.0
+margin_right = 640.0
+margin_bottom = 37.0
+text = "Score:"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HighScoreContainer" type="Node2D" parent="."]
+[connection signal="pressed" from="Restart" to="." method="OnRestartButtonPressed"]

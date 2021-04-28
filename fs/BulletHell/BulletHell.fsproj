@@ -23,7 +23,8 @@
     <Compile Include="BulletsFs.fs" />
     <Compile Include="EnemiesFs.fs" />
     <Compile Include="HandFs.fs" />
-  <Compile Include="TimerElementFs.fs" />
+    <Compile Include="ScoreDisplayFs.fs" />
+    <Compile Include="TimerElementFs.fs" />
     <Compile Include="Node2DFs.fs" />
     <Compile Include="PlayModeMenuFs.fs" />
     <Compile Include="SceneManagerFs.fs" />
