@@ -14,7 +14,7 @@ type Node2DFs() as this =
 
     let hand = this.getNode<HandFs> "Hand"
 
-    let timerElement = this.getNode<RichTextLabel> "Timer"
+    let timerElement = this.getNode<TimerElementFs> "Timer"
 
     let bullets = this.getNode<BulletsFs> "Bullets"
 
@@ -25,7 +25,6 @@ type Node2DFs() as this =
     let random = new System.Random()
 
     let mutable state = AnimationTime(0, 0)
-    let mutable gameTimer : Option<BulletHell.Timer> = None
 
     let updateDone () =
         match state with
@@ -46,8 +45,8 @@ type Node2DFs() as this =
         for direction in directions do
             bullets.Value.AddBullet direction location isPlayer
 
-    let tick unpackedGameTimer delta =
-        let mutable unpackedGameTimer = unpackedGameTimer
+    let tick delta timerE =
+        let timerElement = timerElement.Value
 
         match state with
         | AnimationTime (toDo, hasDone) ->
@@ -55,23 +54,24 @@ type Node2DFs() as this =
                 let count =
                     bullets.Value.getAmountHitPlayer player.Value.Position
 
-                hand.Value.AddCard Dead count
+                if count > 0 then
+                    hand.Value.AddCard Dead count
 
-                let time =
-                    batteries.Value.getExtraTimeAmount player.Value.Position
-
-                unpackedGameTimer <- timer.collectBattery unpackedGameTimer time
-
+                batteries.Value.getExtraTimeAmount player.Value.Position
+                |> timerElement.AddTime
 
                 state <- CastTime
+                timerElement.Show()
 
                 hand.Value.StartCastTime
                     (fun (casted: Cards) ->
+                        timerElement.Hide()
+
                         match casted with
                         | Dead -> this.EmitSignal("End", 0)
                         | _ -> ()
 
-                        gameTimer <- gameTimer |> Option.map timer.addTurn
+                        timerElement.AddTurn()
 
                         player.Value.GoTo(casted |> cards.ToVec) updateDone
 
@@ -84,7 +84,7 @@ type Node2DFs() as this =
 
                         if batteries.Value.count () < 3
                            || (random.Next() > System.Int32.MaxValue / 3) then
-                            unpackedGameTimer
+                            timerE
                             |> timer.maxBatterySize
                             |> (fun x -> x - 1)
                             |> random.Next
@@ -96,20 +96,11 @@ type Node2DFs() as this =
                         enemies.Value.startAnimation updateDone (spawnbullets false)
                         state <- AnimationTime(3, 0))
 
-        | CastTime ->
-            unpackedGameTimer <- timer.tick unpackedGameTimer delta
-            let timeLeft = timer.getTimeLeft unpackedGameTimer
-            timerElement.Value.Text <- Mathf.Round(timeLeft).ToString()
+        | CastTime -> timerElement.Tick delta (fun () -> hand.Value.AddCard Dead 1)
 
-            if timeLeft < 0F then
-                unpackedGameTimer <- timer.reset unpackedGameTimer
-                hand.Value.AddCard Dead 1
-
-        unpackedGameTimer
-
-    member __.addTimer timer = gameTimer <- Some timer
+    member __.addTimer = timerElement.Value.SetTimer
 
     override __._Process delta =
-        match gameTimer with
-        | Some x -> gameTimer <- tick x delta |> Some
+        match timerElement.Value.timer with
+        | Some timer -> tick delta timer
         | None -> ()

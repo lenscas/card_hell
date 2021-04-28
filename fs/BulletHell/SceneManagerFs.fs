@@ -43,7 +43,7 @@ type SceneManagerFs() as this =
                     .Instance()
                 :?> Node2DFs
 
-            timerType |> timer.create |> gameScene.addTimer
+            gameScene.addTimer timerType
 
             this.AddChild(gameScene)
 

@@ -13,7 +13,7 @@ type Timer =
     | EverShrinking of float32 * float32
 
 module timer =
-    let tick timer delta =
+    let tick delta timer =
         match timer with
         | Jam x -> Jam(x - delta)
         | Relaxed x -> Relaxed x
@@ -27,7 +27,7 @@ module timer =
             let y = y - 1F
             EverShrinking(y, y)
 
-    let collectBattery timer amount =
+    let collectBattery amount timer =
         match timer with
         | Jam x -> Jam(x + amount)
         | Relaxed x -> Relaxed(x + amount)
@@ -39,11 +39,31 @@ module timer =
         | Relaxed _ -> 5
         | EverShrinking _ -> 5
 
-    let create =
+    let maxTime =
         function
-        | TimerType.Jam -> Jam 10F
-        | TimerType.Relaxed -> Relaxed 5F
-        | TimerType.EverShrinking -> EverShrinking(10F, 10F)
+        | TimerType.Jam -> 10F
+        | TimerType.Relaxed -> 5F
+        | TimerType.EverShrinking -> 10F
+        | x ->
+            let error =
+                (new System.Exception(x.ToString() + " Is an invalid timer type"))
+
+            error.Data.Add("type", x)
+            raise error
+
+    let toType =
+        function
+        | Jam _ -> TimerType.Jam
+        | Relaxed _ -> TimerType.Relaxed
+        | EverShrinking (_, _) -> TimerType.EverShrinking
+
+    let create timerType =
+        let max = maxTime timerType
+
+        match timerType with
+        | TimerType.Jam -> Jam max
+        | TimerType.Relaxed -> Relaxed max
+        | TimerType.EverShrinking -> EverShrinking(max, max)
         | x ->
             let error =
                 (new System.Exception(x.ToString() + " Is an invalid timer type"))

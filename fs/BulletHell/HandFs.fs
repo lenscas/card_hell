@@ -1,6 +1,7 @@
 namespace BulletHell
 
 open Godot
+open GDUtils
 
 type State =
     | Hidden
@@ -30,6 +31,8 @@ type HandFs() as this =
               SpawnBullets ]
         )
 
+    let turnStateLabel = this.getNode<Label> "TurnPart"
+
     let mutable currentState = Hidden
 
     member __.AddCard card times = deck.addCard card times
@@ -43,10 +46,12 @@ type HandFs() as this =
 
             let card = cardImages.Value.[index]
             card.Hide()
+            turnStateLabel.Value.Text <- "Discard"
         | Discard (card, func) ->
             if card = index then
                 ()
             else
+                turnStateLabel.Value.Hide()
                 card |> deck.getCardFromHand |> func
                 currentState <- Hidden
                 deck.removeFromHand card index
@@ -56,6 +61,9 @@ type HandFs() as this =
 
     member public __.StartCastTime func =
         deck.fillHand ()
+        turnStateLabel.Value.Text <- "Cast"
+        turnStateLabel.Value.Show()
+
         let images = deck.getImages ()
 
         for (index, card) in cardImages.Value |> Seq.indexed do
