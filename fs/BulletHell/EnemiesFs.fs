@@ -30,7 +30,7 @@ type EnemiesFs() as this =
                     x.deck.addCard Dead count
                     x)
 
-    member __.startAnimation func spawnBullets =
+    member __.startAnimation func spawnBullets updateScore =
         state <- Animation(0F, func)
 
         enemies <-
@@ -70,6 +70,7 @@ type EnemiesFs() as this =
                     match card with
                     | Dead ->
                         enemy.sprite.QueueFree()
+                        updateScore ()
                         false
                     | _ -> true)
             |> Seq.map ((fun (_, enemy) -> enemy))

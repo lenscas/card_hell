@@ -6,7 +6,7 @@ open GDUtils
 type SceneManagerFs() as this =
     inherit Node2D()
 
-    let restartScene = this.getNode<Node2D> ("Restart")
+    let restartScene = this.getNode<RestartFs> ("Restart")
     let modeSelectScene = this.getNode<Node2D> ("PlayModeMenu")
 
     let mutable lastScene : Option<Node2DFs> = None
@@ -20,7 +20,7 @@ type SceneManagerFs() as this =
         this.OnRestartGameSameConfig()
 
 
-    member __.OnGameEnd(_score: int) =
+    member __.OnGameEnd(score: int) =
         match lastScene with
         | Some x ->
             x.QueueFree()
@@ -29,7 +29,7 @@ type SceneManagerFs() as this =
             GD.PrintErr "Game ended without a last game set! HOW!?"
             ()
 
-        restartScene.Value.Show()
+        restartScene.Value.newScore score
 
     member this.OnRestartGameSameConfig() =
         match timerType with

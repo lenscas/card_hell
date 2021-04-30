@@ -22,6 +22,9 @@ type Node2DFs() as this =
 
     let batteries = this.getNode<BatteriesFs> "Batteries"
 
+    let scoreDisplay =
+        this.getNode<ScoreDisplayFs> "ScoreDisplay"
+
     let random = new System.Random()
 
     let mutable state = AnimationTime(0, 0)
@@ -57,7 +60,7 @@ type Node2DFs() as this =
                 if count > 0 then
                     hand.Value.AddCard Dead count
 
-                batteries.Value.getExtraTimeAmount player.Value.Position
+                batteries.Value.getExtraTimeAmount player.Value.Position (scoreDisplay.Value.addScore 10)
                 |> timerElement.AddTime
 
                 state <- CastTime
@@ -68,10 +71,11 @@ type Node2DFs() as this =
                         timerElement.Hide()
 
                         match casted with
-                        | Dead -> this.EmitSignal("End", 0)
+                        | Dead -> this.EmitSignal("End", scoreDisplay.Value.getScore ())
                         | _ -> ()
 
                         timerElement.AddTurn()
+                        scoreDisplay.Value.addScore 5 ()
 
                         player.Value.GoTo(casted |> cards.ToVec) updateDone
 
@@ -93,7 +97,7 @@ type Node2DFs() as this =
                             |> batteries.Value.addBattery (test.getRandomInBetween ())
 
                         bullets.Value.startAnimation updateDone
-                        enemies.Value.startAnimation updateDone (spawnbullets false)
+                        enemies.Value.startAnimation updateDone (spawnbullets false) (scoreDisplay.Value.addScore 15)
                         state <- AnimationTime(3, 0))
 
         | CastTime -> timerElement.Tick delta (fun () -> hand.Value.AddCard Dead 1)
