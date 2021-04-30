@@ -10,6 +10,7 @@
       <HintPath>../../.mono/assemblies/Debug/GodotSharp.dll</HintPath>
     </Reference>
     <Reference Include="netstandard" />
+    <PackageReference Include="FSharp.Json" Version="0.4.0" />
   </ItemGroup>
 
   <ItemGroup>
